@@ -1,0 +1,11 @@
+pymongo
+pandas 
+numpy
+python-dotenv
+seaborn
+requests
+matplotlib
+jupyter
+scikit-learn
+dataclasses
+flask
