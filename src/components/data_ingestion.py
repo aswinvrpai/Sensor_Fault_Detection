@@ -6,6 +6,9 @@ from dataclasses import dataclass
 from dotenv import load_dotenv
 import sys
 import pandas as pd
+from sklearn.model_selection import train_test_split 
+
+# Load Environment variables
 load_dotenv()
 
 # This command is very important for running the code;
@@ -47,11 +50,39 @@ class DataIngestion:
             # Log
             logging.info('Retrieving data from MongoDB Client and writing to raw.csv completed')
             
+            # Train and Test Split Data;
+            train_data,test_data=train_test_split(df,test_size=0.3,random_state=42)
+            
+            # Log
+            logging.info('Train and Test split done')
+            
+            # Train Data;
+            os.makedirs(os.path.dirname(self.data_ingestion_config.test_file_path),exist_ok=True)
+            test_csv=self.data_ingestion_config.test_file_path
+            test_data.to_csv(test_csv,index=False)
+            
+            # Log
+            logging.info('Test data saving done')
+            
+            # Train Data;
+            os.makedirs(os.path.dirname(self.data_ingestion_config.train_file_path),exist_ok=True)
+            train_csv=self.data_ingestion_config.train_file_path
+            train_data.to_csv(train_csv,index=False)
+            
+            # Log
+            logging.info('Train data saving done')
+            
+            # Log
+            logging.info('Data Ingestion completed')
+            
+            return (
+                self.data_ingestion_config.train_file_path,
+                self.data_ingestion_config.test_file_path
+            )
+            
         except Exception as e:
             logging.info('Data ingestion error occurred')
             raise CustomException(e,sys)
-        
-        pass
     
 if __name__ == "__main__":
     
