@@ -8,6 +8,8 @@ import sys
 import pandas as pd
 from src.logger import logging
 from src.exception import CustomException
+import numpy as np
+import pickle
 
 @dataclass
 class MongoDbConnect:
@@ -55,6 +57,11 @@ class MongoDbConnect:
             # Datframe;
             df=pd.DataFrame(mongo_db_data)
             
+            # Drop the column name '_id'
+            df.drop(columns='_id', inplace=True)
+            
+            df.replace({'na': np.nan}, inplace=True)
+            
             # Log
             logging.info('Retrieving data from MongoDB Client completed')
             
@@ -63,6 +70,30 @@ class MongoDbConnect:
         except Exception as e:
             logging.info('Error while Retrieving data from MongoDb')
             raise CustomException(e,sys)
+
+"""Function to save data object to a pickle file"""
+def save_object(data_object,file_path):
+    
+    try:
+        
+        dir_path = os.path.dirname(file_path)
+        os.makedirs(dir_path, exist_ok=True)
+        
+        with open(file_path,'wb') as fobj:
+            pickle.dump(data_object,fobj)
+            
+    except Exception as e:
+        logging.info(f'Save Object to Pickle File {file_path} failed.')
+        raise CustomException(e,sys)
+
+"""Function to load data object from a pickle file"""       
+def load_object(file_path):
+    try:
+        with open(file_path,'rb') as file_obj:
+            return pickle.load(file_obj)
+    except Exception as e:
+        logging.info('Load Object from Pickle File {file_path} failed.')
+        raise CustomException(e,sys)
         
 if __name__ == "__main__":
     
